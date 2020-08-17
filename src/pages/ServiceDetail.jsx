@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { fetchServiceById } from "store/actions/servicesActions";
 import { connect, useSelector } from "react-redux";
-
+import { Spinner } from "components";
 const actions = {
   fetchServiceById
 };
@@ -10,9 +10,18 @@ const ServiceDetail = props => {
   const { fetchServiceById } = props;
   const { serviceId } = useParams();
   const service = useSelector(state => state.selectedService.item);
+  const isFetching = useSelector(state => state.selectedService.isFetching);
   useEffect(() => {
     fetchServiceById(serviceId);
   }, [serviceId, fetchServiceById]);
+
+  // if (serviceId !== service.id) {
+  //   return <Spinner />;
+  // }
+
+  if (isFetching && !service.id) {
+    return <Spinner />;
+  }
   return (
     <section className="hero is-fullheight is-default is-bold">
       <div className="hero-body">

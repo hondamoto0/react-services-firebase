@@ -1,6 +1,45 @@
 import React from "react";
 import { Link } from "react-router-dom";
-const Navbar = ({ id }) => {
+import { useDispatch } from "react-redux";
+import { logout } from "store/actions/usersActions";
+import useToast from "helpers/hooks/useToast";
+const Navbar = ({ id, auth }) => {
+  const { showToast } = useToast();
+  const { user, isAuth } = auth;
+  const dispatch = useDispatch();
+  const handleLogOut = () => {
+    dispatch(logout());
+    showToast("Logout Successfuly", "success");
+  };
+  const showLinks = () => {
+    if (!isAuth) {
+      return (
+        <React.Fragment>
+          <Link
+            to="/login"
+            className="navbar-item is-secondary modal-trigger"
+            data-modal="auth-modal"
+          >
+            Log in
+          </Link>
+          <Link to="/register" className="navbar-item">
+            <span className="button signup-button rounded secondary-btn raised">
+              Sign up
+            </span>
+          </Link>
+        </React.Fragment>
+      );
+    } else {
+      return (
+        <div onClick={() => handleLogOut()} to="/" className="navbar-item">
+          <span className="button signup-button rounded is-danger raised">
+            Logout
+          </span>
+        </div>
+      );
+    }
+  };
+
   return (
     <nav
       id={id || ""}
@@ -11,7 +50,7 @@ const Navbar = ({ id }) => {
       <div className="container">
         <div className="navbar-brand">
           <Link className="navbar-item" to="/">
-            <div className="title">Servicio</div>
+            <div className="title">Services</div>
           </Link>
 
           <a className="navbar-item is-hidden-desktop is-hidden-tablet">
@@ -79,6 +118,11 @@ const Navbar = ({ id }) => {
           </div>
 
           <div className="navbar-end">
+            {user && (
+              <div className="navbar-item is-secondary user-welcome">
+                {` Hi ${user.fullName}`}
+              </div>
+            )}
             <Link to="/" className="navbar-item is-secondary">
               Home
             </Link>
@@ -86,7 +130,7 @@ const Navbar = ({ id }) => {
               Services
             </Link>
             <Link to="/faq" className="navbar-item is-secondary">
-              Services
+              FAQ
             </Link>
             <div className="navbar-item has-dropdown is-hoverable">
               <a className="navbar-link">Dropdown</a>
@@ -97,18 +141,7 @@ const Navbar = ({ id }) => {
                 <a className="navbar-item">Dropdown item</a>
               </div>
             </div>
-            <Link
-              to="/login"
-              className="navbar-item is-secondary modal-trigger"
-              data-modal="auth-modal"
-            >
-              Log in
-            </Link>
-            <Link to="/register" className="navbar-item">
-              <span className="button signup-button rounded secondary-btn raised">
-                Sign up
-              </span>
-            </Link>
+            {showLinks()}
           </div>
         </div>
       </div>
